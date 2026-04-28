@@ -215,12 +215,13 @@
 
   <script>
     // ── Configuration ──────────────────────────────────────
-    // Social media links (company-wide, edit here)
-    const SOCIAL = {
-      instagram: 'https://www.instagram.com/ecrgroupchile/',
-      linkedin: 'https://www.linkedin.com/company/ecrgroupcl/',
-      youtube: 'https://www.youtube.com/@ecrgroupchile',
-      tiktok: 'https://www.tiktok.com/@ecrgroupchile'
+    // Icon images per social network (used by all brands)
+    const SOCIAL_ICONS = {
+      instagram: { src: 'https://ecrgroup.cl/wp-content/uploads/2025/08/IG.png', alt: 'Instagram' },
+      linkedin: { src: 'https://ecrgroup.cl/wp-content/uploads/2025/08/LK.png', alt: 'LinkedIn' },
+      youtube: { src: 'https://ecrgroup.cl/wp-content/uploads/2025/08/YT.png', alt: 'YouTube' },
+      tiktok: { src: 'https://ecrgroup.cl/wp-content/uploads/2026/04/tiktok-3-512.png', alt: 'TikTok' },
+      facebook: { src: 'https://ecrgroup.cl/wp-content/uploads/2026/04/FB-1.png', alt: 'Facebook' }
     };
 
     // Base URL for images when the signature is pasted externally.
@@ -228,32 +229,52 @@
     // For local preview, relative paths are used.
     const IMAGE_BASE = 'assets';
 
-    // Brand logos — replace each URL with the public URL of the corresponding logo
-    // once you upload them to ecrgroup.cl (or another public host).
+    // Brand logos and per-brand social links.
+    // Only the social networks listed here will appear for that brand.
     const BRANDS = {
       group: {
         name: 'ECR GROUP®',
         url: 'https://www.ecrgroup.cl',
         logo: 'https://ecrgroup.cl/wp-content/uploads/2026/04/logo_ecr.png',
-        width: 200
+        width: 200,
+        social: {
+          instagram: 'https://www.instagram.com/ecrgroupchile/',
+          linkedin: 'https://www.linkedin.com/company/ecrgroupcl/',
+          youtube: 'https://www.youtube.com/@ecrgroupchile',
+          tiktok: 'https://www.tiktok.com/@ecrgroupchile',
+          facebook: 'https://web.facebook.com/quierotrabajar.ecr'
+        }
       },
       salud: {
         name: 'ECR® SALUD',
         url: 'https://www.ecrgroup.cl',
         logo: 'https://ecrgroup.cl/wp-content/uploads/2026/04/logo_salud.png',
-        width: 200
+        width: 200,
+        social: {
+          instagram: 'https://www.instagram.com/ecrsalud/',
+          linkedin: 'https://www.linkedin.com/company/ecr-salud/',
+          facebook: 'https://www.facebook.com/ecrsaludchile'
+        }
       },
       capacitacion: {
         name: 'ECR® CAPACITACIÓN',
         url: 'https://www.ecrgroup.cl',
         logo: 'https://ecrgroup.cl/wp-content/uploads/2026/04/logo_capacitacion.png',
-        width: 200
+        width: 200,
+        social: {
+          instagram: 'https://www.instagram.com/ecr_capacitacion/',
+          linkedin: 'https://www.linkedin.com/company/ecrcapacitacion/',
+          facebook: 'https://www.facebook.com/ecrcapacitacion/'
+        }
       },
       solar: {
         name: 'ECR® SOLAR',
         url: 'https://www.ecrgroup.cl',
         logo: 'https://ecrgroup.cl/wp-content/uploads/2026/04/logo_solar.png',
-        width: 120
+        width: 120,
+        social: {
+          linkedin: 'https://www.linkedin.com/company/ecr-solar/'
+        }
       }
     };
 
@@ -315,31 +336,17 @@
       const w = brand.width || 200;
       rows += `<tr><td style="padding-bottom:8px;"><a href="${brand.url}" target="_blank"><img src="${brand.logo}" alt="${esc(brand.name)}" width="${w}" style="display:block;width:${w}px;height:auto;border:0;"></a></td></tr>`;
 
-      // Social icons
-      rows += `<tr><td>
-        <table cellpadding="0" cellspacing="0" border="0"><tr>
-          <td style="padding-right:8px;">
-            <a href="${SOCIAL.instagram}" target="_blank">
-              <img src="https://ecrgroup.cl/wp-content/uploads/2025/08/IG.png" alt="Instagram" width="24" height="24" style="display:block;border:0;">
-            </a>
-          </td>
-          <td style="padding-right:8px;">
-            <a href="${SOCIAL.linkedin}" target="_blank">
-              <img src="https://ecrgroup.cl/wp-content/uploads/2025/08/LK.png" alt="LinkedIn" width="24" height="24" style="display:block;border:0;">
-            </a>
-          </td>
-          <td style="padding-right:8px;">
-            <a href="${SOCIAL.youtube}" target="_blank">
-              <img src="https://ecrgroup.cl/wp-content/uploads/2025/08/YT.png" alt="YouTube" width="24" height="24" style="display:block;border:0;">
-            </a>
-          </td>
-          <td>
-            <a href="${SOCIAL.tiktok}" target="_blank">
-              <img src="https://ecrgroup.cl/wp-content/uploads/2026/04/tiktok-3-512.png" alt="TikTok" width="24" height="24" style="display:block;border:0;">
-            </a>
-          </td>
-        </tr></table>
-      </td></tr>`;
+      // Social icons (only the networks defined for the selected brand)
+      const socialEntries = Object.entries(brand.social || {});
+      if (socialEntries.length) {
+        const cells = socialEntries.map(([key, link], i) => {
+          const icon = SOCIAL_ICONS[key];
+          if (!icon) return '';
+          const pad = i < socialEntries.length - 1 ? 'padding-right:8px;' : '';
+          return `<td style="${pad}"><a href="${link}" target="_blank"><img src="${icon.src}" alt="${icon.alt}" width="24" height="24" style="display:block;border:0;"></a></td>`;
+        }).join('');
+        rows += `<tr><td><table cellpadding="0" cellspacing="0" border="0"><tr>${cells}</tr></table></td></tr>`;
+      }
 
       return `<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">${rows}</table>`;
     }
