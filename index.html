@@ -177,6 +177,19 @@
       <label for="email">Correo electrónico</label>
       <input type="email" id="email" placeholder="amujica@ecrgroup.cl">
 
+      <label for="address">Dirección</label>
+      <input type="text" id="address" value="Los Tres Antonios 119, Ñuñoa - Santiago."
+        placeholder="Los Tres Antonios 119, Ñuñoa - Santiago.">
+
+      <label for="brand">Marca / Logo</label>
+      <select id="brand"
+        style="width:100%;padding:0.55rem 0.75rem;border:1px solid #ccc;border-radius:6px;font-size:0.95rem;margin-bottom:1rem;background:#fff;">
+        <option value="group">ECR GROUP®</option>
+        <option value="salud">ECR® SALUD</option>
+        <option value="capacitacion">ECR® CAPACITACIÓN</option>
+        <option value="solar">ECR® SOLAR</option>
+      </select>
+
     </div>
 
     <!-- Preview -->
@@ -215,16 +228,47 @@
     // For local preview, relative paths are used.
     const IMAGE_BASE = 'assets';
 
+    // Brand logos — replace each URL with the public URL of the corresponding logo
+    // once you upload them to ecrgroup.cl (or another public host).
+    const BRANDS = {
+      group: {
+        name: 'ECR GROUP®',
+        url: 'https://www.ecrgroup.cl',
+        logo: 'https://ecrgroup.cl/wp-content/uploads/2026/04/logo_ecr.png',
+        width: 200
+      },
+      salud: {
+        name: 'ECR® SALUD',
+        url: 'https://www.ecrgroup.cl',
+        logo: 'https://ecrgroup.cl/wp-content/uploads/2026/04/logo_salud.png',
+        width: 200
+      },
+      capacitacion: {
+        name: 'ECR® CAPACITACIÓN',
+        url: 'https://www.ecrgroup.cl',
+        logo: 'https://ecrgroup.cl/wp-content/uploads/2026/04/logo_capacitacion.png',
+        width: 200
+      },
+      solar: {
+        name: 'ECR® SOLAR',
+        url: 'https://www.ecrgroup.cl',
+        logo: 'https://ecrgroup.cl/wp-content/uploads/2026/04/logo_solar.png',
+        width: 120
+      }
+    };
+
     // ── Render ─────────────────────────────────────────────
-    const fields = ['name', 'title', 'phone', 'email'];
+    const fields = ['name', 'title', 'phone', 'email', 'address'];
 
     fields.forEach(id => {
       document.getElementById(id).addEventListener('input', renderPreview);
     });
+    document.getElementById('brand').addEventListener('change', renderPreview);
 
     function getValues() {
       const v = {};
       fields.forEach(id => v[id] = document.getElementById(id).value.trim());
+      v.brand = document.getElementById('brand').value;
       return v;
     }
 
@@ -258,14 +302,18 @@
         rows += `<tr><td style="font-family:${font};font-size:11pt;color:${gray};padding-bottom:2px;">Mail: <a href="mailto:${esc(v.email)}" style="color:#1a6fb5;text-decoration:none;">${esc(v.email)}</a></td></tr>`;
       }
 
-      // Address (fixed)
-      rows += `<tr><td style="font-family:${font};font-size:11pt;color:${gray};padding-bottom:2px;">Los Tres Antonios 119, Ñuñoa - Santiago.</td></tr>`;
+      // Address
+      if (v.address) {
+        rows += `<tr><td style="font-family:${font};font-size:11pt;color:${gray};padding-bottom:2px;">${esc(v.address)}</td></tr>`;
+      }
 
       // Spacer
       rows += `<tr><td style="padding-bottom:12px;"></td></tr>`;
 
       // Logo
-      rows += `<tr><td style="padding-bottom:8px;"><a href="https://www.ecrgroup.cl" target="_blank"><img src="https://ecrgroup.cl/wp-content/uploads/2023/02/logo_header.png" alt="ECR GROUP" width="200" style="display:block;width:200px;height:auto;border:0;"></a></td></tr>`;
+      const brand = BRANDS[v.brand] || BRANDS.group;
+      const w = brand.width || 200;
+      rows += `<tr><td style="padding-bottom:8px;"><a href="${brand.url}" target="_blank"><img src="${brand.logo}" alt="${esc(brand.name)}" width="${w}" style="display:block;width:${w}px;height:auto;border:0;"></a></td></tr>`;
 
       // Social icons
       rows += `<tr><td>
